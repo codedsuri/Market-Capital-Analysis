@@ -1,4 +1,4 @@
-1. Ranking Analysis solves the problem of analysis the Companies of a country and theri ranks based on Share Price and Market Capital Price.
+1. Secomd step in EDA is Ranking Analysis solves the problem of analysis the Companies of a country and their ranks based on Share Price and Market Capital Price.
 2. Cast function used to modify the data type of Price (USD) & MarketCap to Numeric type to use the window function.
 3. SQL Concepts utilized to analyze the dataset are: CTE, Sub-Queries, Window Function- Row_Number, Insert using CTE.
 4. Given below is the script: 'Company_List' is original table imported in SSMS.
