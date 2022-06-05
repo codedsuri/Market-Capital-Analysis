@@ -1,0 +1,58 @@
+1. Third step in EDA is Emerging Companies based on logic if the share price of the company is more than 50% of the Average Share price of country of that country that company is categorised as 'Emerging' else 'Struggling'.
+2. Cast function used to modify the data type of Price (USD) & MarketCap to Numeric type to use the window function.
+3. SQL Concepts utilized to analyze the dataset are: Sub-Queries,Case Statement, Window Function- avg, Insert using Select Statement.
+4. Given below is the script: 'Company_List' is original table imported in SSMS.
+
+Select a.*
+Into Average_Analysis
+From
+(
+Select z.*,
+(case when z.Price_Diff <= 0.50*z.Avg_Price
+  Then 'Emerging'
+   Else 'Struggling'
+   End) as Growth_Status
+   -- Adding a column for Growth of that company if the share price of the company is more than 50% of the Average Share price of country of that country that company
+	from 
+	 (Select y.*,
+	   (Avg_Price-Cast_price) as Price_Diff, 
+	   (case when y.Cast_price >= y.Avg_Price
+		Then 'More'
+		 Else 'Less'
+		 End) as Cmp_AP
+     --Cmp_AP is comparing if Share price < Average price of country of company the lable as 'Less' else 'More'
+		 from
+		  (
+			Select x.Name, x.Symbol, x.Country, x.Cast_price, 
+			avg(cast_price) over(partition by country) as Avg_Price
+      --Find Average of country
+			from
+			 (
+			  Select *, CAST(CAST(price_usd as float) as numeric(10,2)) as Cast_price
+				from Company_List
+        -- Modify Share Price into numeric data type
+			 ) x
+			) y
+		)z
+	Where z.Cmp_AP ='Less')a;
+
+Select * from Average_Analysis --Check the Inserted records from above code
+
+5.  Table created to Store the output is 'Average_Analysis'
+Syntax:
+Create Table Average_Analysis
+( 
+[Name] varchar(70),
+Symbol Varchar(15), 
+Country Varchar(30), 
+Cast_price numeric(10,2), 
+Avg_Price numeric(10,2),
+Price_Diff numeric(10,2),
+Cmp_AP Varchar(10),
+Growth_Status Varchar (15)
+);
+
+#Expected Output
+Name                    Symbol  Country    Cast_price  Avg_price  Price_Diff Cmp_AP  Growth_Status
+Galicia Financial Group	GGAL	  Argentina	 9.37	       86.164615	76.794615	 Less	   Struggling
+Telecom Argentina	      TEO	    Argentina	 5.09	       86.164615	81.074615	 Less	   Struggling
