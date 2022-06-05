@@ -29,6 +29,13 @@ Select * from Join_PrMC;
 -- End
 Select * from [dbo].[Max_PriceMarkCap]; --Check records inserted in table created to store the desired output.
 
+4. Table created to Store the output is 'Max_PriceMarkCap'
+Syntax:
+Create Table Max_PriceMarkCap
+(Country Varchar (50),
+Max_Price numeric(10,2),
+Max_MarketCapital numeric(20,2));
+
 #Expected Output
 Country               Max_Price Max_MarketCapital 
 United Arab Emirates	8.14	    905319680.00
