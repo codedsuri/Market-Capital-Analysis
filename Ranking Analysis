@@ -1,0 +1,53 @@
+1. Ranking Analysis solves the problem of analysis the Companies of a country and theri ranks based on Share Price and Market Capital Price.
+2. Cast function used to modify the data type of Price (USD) & MarketCap to Numeric type to use the window function.
+3. SQL Concepts utilized to analyze the dataset are: CTE, Sub-Queries, Window Function- Row_Number, Insert using CTE.
+4. Given below is the script: 'Company_List' is original table imported in SSMS.
+
+With CTE1 as
+	(
+	  Select *, Cast(Cast(Price_USD as Float) as Numeric(10,2)) as Cast_price, Cast(Cast(Marketcap as Float) as Numeric(20,2)) as Cast_MktCap
+	  from Company_List
+	),
+	CTE2 as
+	(
+	Select CTE1.Rank,CTE1.Name,CTE1.Symbol, CTE1.Country, CTE1.Cast_price, CTE1.Cast_MktCap, 
+	row_number() over(partition by Country order by Cast_price desc) as Price_Rank
+	-- dense_rank() over(partition by country order by  Cast_price desc) as Common_Rank
+	from CTE1
+	),
+	CTE3 as
+	(
+	Select CTE1.Rank, CTE1.Name,CTE1.Symbol, CTE1.Country, CTE1.Cast_price, CTE1.Cast_MktCap, 
+	row_number() over(partition by Country order by Cast_MktCap desc) as MarketCapital_Rank
+	-- dense_rank() over(partition by country order by  Cast_price desc) as Common_Rank
+	from CTE1
+	),
+	CTE4 as 
+	(
+	Select CTE2.Name, CTE2.Symbol, CTE2.Country, CTE2.Cast_price, CTE2.Cast_MktCap, CTE2.Price_Rank, CTE3.MarketCapital_Rank 
+	from CTE2 join CTE3 on CTE2.Rank = CTE3.Rank
+	)
+	Insert Into [dbo].[Rank_Analysis]
+	([Name], Symbol, Country, Cast_price, Cast_MktCap, Price_Rank, MarketCapital_Rank)
+
+	Select * from CTE4;
+-- END
+
+Select * from Rank_analysis
+5. Table created to Store the output is 'Rank_analysis'
+Syntax:
+Create Table Rank_Analysis
+(
+[Name] varchar(70),
+Symbol Varchar(15), 
+Country Varchar(30), 
+Cast_price numeric(10,2), 
+Cast_MktCap numeric(20,2), 
+Price_Rank int, 
+MarketCapital_Rank int
+);
+
+#Expected Output
+Name            Symbol  Country   Cast_Price  Cast_MktCap     Price_Rank MarketCap_Rank
+MercadoLibre	  MELI	  Argentina	1035.14	    52232130560.00	1 	       1
+Pampa EnergÃ­a	PAM	    Argentina	18.94	      1054579200.00	  2	         6
